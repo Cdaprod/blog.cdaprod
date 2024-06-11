@@ -9,6 +9,7 @@ import (
 
     "github.com/Cdaprod/blog.cdaprod/auth"
     "github.com/Cdaprod/blog.cdaprod/handlers"
+    "github.com/Cdaprod/blog.cdaprod/middleware"
     "github.com/gorilla/mux"
     "github.com/minio/minio-go/v7"
     "github.com/minio/minio-go/v7/pkg/credentials"
@@ -59,7 +60,8 @@ func main() {
     r.HandleFunc("/", handlers.HomeHandler)
     r.HandleFunc("/about", handlers.AboutHandler)
     r.HandleFunc("/post", handlers.PostHandler)
-    r.HandleFunc("/create", handlers.CreatePostHandler)
+    r.HandleFunc("/create", handlers.CreatePostHandler).Methods("GET")
+    r.HandleFunc("/create", handlers.CreatePostHandler).Methods("POST").Handler(middleware.AuthMiddleware(http.HandlerFunc(handlers.CreatePostHandler)))
     r.HandleFunc("/auth/login", auth.HandleGoogleLogin)
     r.HandleFunc("/auth/callback", auth.HandleGoogleCallback)
 

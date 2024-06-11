@@ -6,7 +6,7 @@ import (
     "log"
     "net/http"
     "os"
-
+    "github.com/gorilla/sessions"
     "golang.org/x/oauth2"
     "golang.org/x/oauth2/google"
     "google.golang.org/api/oauth2/v2"
@@ -21,6 +21,7 @@ var googleOauthConfig = &oauth2.Config{
 }
 
 var oauthStateString = "random"
+var store = sessions.NewCookieStore([]byte("something-very-secret"))
 
 func HandleGoogleLogin(w http.ResponseWriter, r *http.Request) {
     url := googleOauthConfig.AuthCodeURL(oauthStateString)
@@ -56,5 +57,13 @@ func HandleGoogleCallback(w http.ResponseWriter, r *http.Request) {
     }
 
     // Here you can handle the user's info (e.g., save it to a database)
+    // For now, we will just print the user info
     fmt.Fprintf(w, "UserInfo: %v", userinfo)
+
+    // Create a session
+    session, _ := store.Get(r, "auth-session")
+
+    // Set user as authenticated
+    session.Values["authenticated"] = true
+    session.Save(r, w)
 }

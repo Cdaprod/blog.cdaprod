@@ -6,7 +6,6 @@ import (
     "fmt"
     "html/template"
     "io"
-    "log"
     "net/http"
     "strings"
 
@@ -98,10 +97,10 @@ func CreatePostHandler(w http.ResponseWriter, r *http.Request) {
         content := r.FormValue("content")
         code := r.FormValue("code")
         minioObjectName := title + ".txt"
-        
+
         // Convert the content to a reader
         contentReader := strings.NewReader(content)
-        
+
         // Upload content to MinIO
         _, err := minioClient.PutObject(context.Background(), "blog-posts", minioObjectName, contentReader, int64(contentReader.Len()), minio.PutObjectOptions{ContentType: "text/plain"})
         if err != nil {
